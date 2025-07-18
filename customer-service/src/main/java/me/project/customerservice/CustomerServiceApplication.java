@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EntityScan(basePackages = "me.project.customerservice.Entity")
+@EntityScan(basePackages = "me.project.customerservice.entity")
 @EnableDiscoveryClient
 public class CustomerServiceApplication {
 

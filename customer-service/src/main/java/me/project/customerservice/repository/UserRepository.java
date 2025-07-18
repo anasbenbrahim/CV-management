@@ -1,9 +1,9 @@
-package me.project.customerservice.Repository;
+package me.project.customerservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import me.project.customerservice.Entity.User;
+import me.project.customerservice.entity.User;
 import me.project.customerservice.Enum.UserRole;
 
 import java.util.List;

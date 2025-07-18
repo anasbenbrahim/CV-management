@@ -1,7 +1,7 @@
 package me.project.customerservice.config;
 
 import lombok.RequiredArgsConstructor;
-import me.project.customerservice.Repository.UserRepository;
+import me.project.customerservice.repository.UserRepository;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

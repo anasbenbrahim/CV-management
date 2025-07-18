@@ -1,6 +1,6 @@
 package me.project.customerservice.service.Authetification;
 
-import me.project.customerservice.Entity.User;
+import me.project.customerservice.entity.User;
 import me.project.customerservice.dto.AuthentificationRequest;
 import me.project.customerservice.dto.AuthetificationResponse;
 import me.project.customerservice.dto.ResetPasswordDto;

@@ -1,4 +1,4 @@
-package me.project.customerservice.Entity;
+package me.project.customerservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

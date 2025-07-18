@@ -2,8 +2,8 @@ package me.project.customerservice.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import me.project.customerservice.Entity.User;
-import me.project.customerservice.Repository.UserRepository;
+import me.project.customerservice.entity.User;
+import me.project.customerservice.repository.UserRepository;
 import me.project.customerservice.service.Authetification.AuthService;
 import me.project.customerservice.service.Authetification.AuthServiceImpl;
 import me.project.customerservice.service.Authetification.PasswordResetService;

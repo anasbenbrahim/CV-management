@@ -7,8 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import me.project.customerservice.Entity.User;
-import me.project.customerservice.Repository.UserRepository;
+import me.project.customerservice.entity.User;
+import me.project.customerservice.repository.UserRepository;
 import me.project.customerservice.service.EmailService;
 
 @Service
