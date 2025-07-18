@@ -19,10 +19,18 @@ spring:
                 - Path=/customer-service/**
               filters:
                 - StripPrefix=1
+
             - id: cv-service
               uri: lb://cv-service
               predicates:
                 - Path=/cv-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: reference-service
+              uri: lb://reference-service
+              predicates:
+                - Path=/reference-service/**
               filters:
                 - StripPrefix=1
 

@@ -42,9 +42,9 @@ public class CvController {
         return ResponseEntity.ok(this.service.listCv());
     }
 
-    @GetMapping("/{cv-id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CvResponse> findById(
-            @PathVariable("cv-id") Long cvId
+            @PathVariable("id") Long cvId
     ) {
         return ResponseEntity.ok(this.service.getCvById(cvId));
     }
