@@ -1,0 +1,28 @@
+server:
+  port: 2004
+
+spring:
+  application:
+    name: matching-service
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.mapstruct: DEBUG
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+ml:
+  service:
+    url: http://localhost:5000/predict  # Ensure this matches the Flask service

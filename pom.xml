@@ -17,6 +17,7 @@
         <module>cv-service</module>
         <module>reference-service</module>
         <module>mission-service</module>
+        <module>matching-service</module>
     </modules>
 
     <properties>
