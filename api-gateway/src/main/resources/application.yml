@@ -34,6 +34,13 @@ spring:
               filters:
                 - StripPrefix=1
 
+            - id: mission-service
+              uri: lb://mission-service
+              predicates:
+                - Path=/mission-service/**
+              filters:
+                - StripPrefix=1
+
 eureka:
   client:
     service-url:

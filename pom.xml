@@ -16,6 +16,7 @@
         <module>customer-service</module>
         <module>cv-service</module>
         <module>reference-service</module>
+        <module>mission-service</module>
     </modules>
 
     <properties>

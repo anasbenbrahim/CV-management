@@ -1,0 +1,38 @@
+server:
+  port: 2003
+
+spring:
+  application:
+    name: mission-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/cv-management-mission-service
+    username: postgres
+    password: postgres
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+
+  mvc:
+    log-request-details: true
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.mapstruct: DEBUG
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+
