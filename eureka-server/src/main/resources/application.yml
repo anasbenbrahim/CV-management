@@ -10,3 +10,8 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

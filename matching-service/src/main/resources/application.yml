@@ -8,21 +8,36 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: FULL
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${DISCOVERY_SERVICE_URL:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.uuid}
+
+ml:
+  service:
+    url: http://ml-service:5000/predict  # Updated to use container name
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
 
 logging:
   level:
     org.springframework.web: DEBUG
     org.mapstruct: DEBUG
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-
-ml:
-  service:
-    url: http://localhost:5000/predict  # Ensure this matches the Flask service
+    com.netflix.discovery: DEBUG        # For Eureka client debugging
+    org.springframework.cloud.openfeign: DEBUG  # For Feign client debugging

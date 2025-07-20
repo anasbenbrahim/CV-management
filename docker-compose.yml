@@ -1,0 +1,260 @@
+services:
+  postgres-customer:
+    image: postgres:17
+    container_name: postgres-customer
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: customerdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-customer-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cv-management-app
+
+  postgres-cv:
+    image: postgres:17
+    container_name: postgres-cv
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cvdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-cv-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cv-management-app
+
+  postgres-reference:
+    image: postgres:17
+    container_name: postgres-reference
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: referencedb
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-reference-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cv-management-app
+
+  postgres-mission:
+    image: postgres:17
+    container_name: postgres-mission
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: missiondb
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres-mission-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cv-management-app
+
+  cv-management-eureka-server:
+    build: ./eureka-server
+    container_name: cv-management-eureka-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  cv-management-customer-service:
+    build: ./customer-service
+    container_name: cv-management-customer-service
+    ports:
+      - "2000:2000"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      postgres-customer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2000/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  cv-management-cv-service:
+    build: ./cv-service
+    container_name: cv-management-cv-service
+    ports:
+      - "2001:2001"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      postgres-cv:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2001/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  cv-management-reference-service:
+    build: ./reference-service
+    container_name: cv-management-reference-service
+    ports:
+      - "2002:2002"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      postgres-reference:
+        condition: service_healthy
+      cv-management-api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2002/actuator/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    networks:
+      - cv-management-app
+
+  cv-management-mission-service:
+    build: ./mission-service
+    container_name: cv-management-mission-service
+    ports:
+      - "2003:2003"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      postgres-mission:
+        condition: service_healthy
+      cv-management-cv-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2003/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  ml-service:
+    build:
+      context: ./ml-service
+    container_name: ml-service
+    ports:
+      - "5000:5000"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      cv-management-mission-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  cv-management-matching-service:
+    build: ./matching-service
+    container_name: cv-management-matching-service
+    ports:
+      - "2004:2004"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      cv-management-mission-service:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2004/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+  cv-management-api-gateway:
+    build: ./api-gateway
+    container_name: cv-management-api-gateway
+    ports:
+      - "8888:8888"
+    environment:
+      - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
+    depends_on:
+      cv-management-eureka-server:
+        condition: service_healthy
+      cv-management-matching-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cv-management-app
+
+volumes:
+  postgres-customer-data:
+  postgres-cv-data:
+  postgres-reference-data:
+  postgres-mission-data:
+
+networks:
+  cv-management-app:
+    driver: bridge

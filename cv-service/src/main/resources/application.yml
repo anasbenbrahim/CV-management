@@ -11,9 +11,15 @@ spring:
         enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/cv-management-cv-service
+    url: jdbc:postgresql://postgres-cv:5432/cvdb
     username: postgres
     password: postgres
+    hikari:
+      connection-timeout: 60000  # 60 seconds
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000  # 5 minutes
+      max-lifetime: 1800000  # 30 minutes
 
   jpa:
     properties:
@@ -26,6 +32,10 @@ spring:
   mvc:
     log-request-details: true
 
+  retry:
+    max-attempts: 5
+    delay: 2000
+
 logging:
   level:
     org.springframework.web: DEBUG
@@ -34,9 +44,14 @@ logging:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${DISCOVERY_SERVICE_URL:http://localhost:8761/eureka}
     register-with-eureka: true
     fetch-registry: true
   instance:
     prefer-ip-address: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
