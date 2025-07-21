@@ -5,24 +5,12 @@ spring:
   application:
     name: mission-service
 
-  datasource:
-    url: jdbc:postgresql://postgres-mission:5432/missiondb
-    username: postgres
-    password: postgres
-    hikari:
-      connection-timeout: 60000  # 60 seconds
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000  # 5 minutes
-      max-lifetime: 1800000  # 30 minutes
+  h2:
+    console:
+      enabled: true
 
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    generate-ddl: true
+  datasource:
+    url: jdbc:h2:mem:mission-db
 
   mvc:
     log-request-details: true

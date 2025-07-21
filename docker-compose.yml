@@ -1,88 +1,4 @@
 services:
-  postgres-customer:
-    image: postgres:17
-    container_name: postgres-customer
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: customerdb
-    ports:
-      - "5434:5432"
-    volumes:
-      - postgres-customer-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - cv-management-app
-
-  postgres-cv:
-    image: postgres:17
-    container_name: postgres-cv
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: cvdb
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres-cv-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - cv-management-app
-
-  postgres-reference:
-    image: postgres:17
-    container_name: postgres-reference
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: referencedb
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres-reference-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - cv-management-app
-
-  postgres-mission:
-    image: postgres:17
-    container_name: postgres-mission
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: missiondb
-    ports:
-      - "5437:5432"
-    volumes:
-      - postgres-mission-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - cv-management-app
-
   cv-management-eureka-server:
     build: ./eureka-server
     container_name: cv-management-eureka-server
@@ -107,8 +23,6 @@ services:
     depends_on:
       cv-management-eureka-server:
         condition: service_healthy
-      postgres-customer:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2000/actuator/health"]
       interval: 10s
@@ -128,7 +42,7 @@ services:
     depends_on:
       cv-management-eureka-server:
         condition: service_healthy
-      postgres-cv:
+      cv-management-customer-service:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2001/actuator/health"]
@@ -147,9 +61,7 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
     depends_on:
-      postgres-reference:
-        condition: service_healthy
-      cv-management-api-gateway:
+      cv-management-cv-service:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2002/actuator/health"]
@@ -168,11 +80,7 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
     depends_on:
-      cv-management-eureka-server:
-        condition: service_healthy
-      postgres-mission:
-        condition: service_healthy
-      cv-management-cv-service:
+      cv-management-reference-service:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2003/actuator/health"]
@@ -192,8 +100,6 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
     depends_on:
-      cv-management-eureka-server:
-        condition: service_healthy
       cv-management-mission-service:
         condition: service_healthy
     healthcheck:
@@ -213,12 +119,12 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
     depends_on:
-      cv-management-eureka-server:
+      cv-management-cv-service:
         condition: service_healthy
       cv-management-mission-service:
         condition: service_healthy
       ml-service:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2004/actuator/health"]
       interval: 10s
@@ -236,8 +142,6 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://cv-management-eureka-server:8761/eureka
     depends_on:
-      cv-management-eureka-server:
-        condition: service_healthy
       cv-management-matching-service:
         condition: service_healthy
     healthcheck:
@@ -249,11 +153,6 @@ services:
     networks:
       - cv-management-app
 
-volumes:
-  postgres-customer-data:
-  postgres-cv-data:
-  postgres-reference-data:
-  postgres-mission-data:
 
 networks:
   cv-management-app:

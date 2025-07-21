@@ -5,26 +5,6 @@ spring:
   application:
     name: customer-service
 
-  datasource:
-    url: jdbc:postgresql://postgres-customer:5432/customerdb
-    username: postgres
-    password: postgres
-    hikari:
-      connection-timeout: 60000  # 60 seconds
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000  # 5 minutes
-      max-lifetime: 1800000  # 30 minutes
-
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        connection_provider_class: org.hibernate.hikaricp.internal.HikariCPConnectionProvider
-    hibernate:
-      ddl-auto: update
-    generate-ddl: true
-
   mvc:
     log-request-details: true
 
@@ -43,6 +23,13 @@ spring:
   retry:
     max-attempts: 5
     delay: 2000
+
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    url: jdbc:h2:mem:customer-db
 
 logging:
   level:
